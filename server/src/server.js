@@ -5,6 +5,7 @@ import { connectDB } from "./database/mongodb.js";
 
 const app = createApp()
 
+
 function startServer() {
   connectDB().then(() => {
     app.listen(env.PORT, () => {
