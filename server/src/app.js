@@ -1,19 +1,24 @@
-import express from "express"
-import env from "./config/env.js"
-import morgan from "morgan"
+import express from "express";
+import morgan from "morgan";
+import Errorhandler from "./shared/middlewares/errorHandler.middleware.js";
+import env from "./config/env.js";
 
 export default function createApp() {
-  const app = express()
+  const app = express();
 
-  if (env.NODE_ENV == "development")
-    app.use(morgan("dev"))
+  if (env.NODE_ENV === "development") {
+    app.use(morgan("dev"));
+  }
 
   //----health route-->>
   app.get("/health", (req, res) => {
     res.json({
       message: "healthy",
-    })
-  })
+    });
+  });
 
-  return app
+  //----- global error handling middleware ------
+  app.use(Errorhandler);
+
+  return app;
 }
