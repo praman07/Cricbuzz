@@ -1,6 +1,8 @@
+import express from "express"
 import hpp from "hpp"
 import helmet from "helmet"
 import compression from "compression"
+import cors from "cors"
 import ratelimit from "express-rate-limit"
 import env from "../../config/env.js"
 
