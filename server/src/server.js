@@ -8,7 +8,7 @@ const app = createApp()
 function startServer() {
   connectDB().then(() => {
     app.listen(env.PORT, () => {
-      logger.info({ port: env.PORT }, "Server is running");
+      logger.info({ port: env.PORT }, "Server is running on port");
     })
   }).catch((err) => {
     logger.error({ error: err }, "Error while running server.")
