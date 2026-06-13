@@ -3,21 +3,50 @@ import * as teamService from "./team.service.js";
 import { createTeamDto, updateTeamDto } from "./dto/team.dto.js";
 
 /**
- * Controller Layer — Team (Admin)
- * -----------------------------------------------------------------------
- * Thin adapters: extract input from req.body/req.params, call the
- * service, serialise the response. All async errors are forwarded to
- * Errorhandler via asyncHandler in the route definitions — no try/catch
- * here.
+ * Team Controller (Admin + Public)
+ * ─────────────────────────────────────────────────────────────────────
+ * PUBLIC  handlers: getTeams, getTeamById (no auth, responses cached)
+ * ADMIN   handlers: createTeam, updateTeam, deleteTeam, getSquad,
+ *                   addPlayerToSquad, removePlayerFromSquad
  *
- * NOTE: validateRequest only checks shapes via schema.parse() and does
- * NOT attach a transformed result to req.validated. Controllers read
- * raw req.body/req.params — Zod transforms (.trim(), defaults, etc.)
- * are NOT applied to these values. Validation here is gatekeeping only,
- * not data shaping. If a field needs guaranteed trimming/defaults,
- * apply it explicitly in the service layer.
- * -----------------------------------------------------------------------
+ * All async errors forwarded to Errorhandler via asyncHandler — no
+ * try/catch here. Raw req.body/req.params used since validateRequest
+ * does not attach req.validated; DTOs whitelist fields before service.
+ * ─────────────────────────────────────────────────────────────────────
  */
+
+// ─── Public Handlers ─────────────────────────────────────────────────
+
+/**
+ * GET /api/teams
+ * List all active teams.
+ * Access: Public (no auth) — Cache: 60s
+ */
+export const getTeams = async (req, res) => {
+  const teams = await teamService.getTeams();
+
+  return res.status(StatusCodes.OK).json({
+    success: true,
+    count: teams.length,
+    data: teams,
+  });
+};
+
+/**
+ * GET /api/teams/:id
+ * Get team details by ID (with populated squad).
+ * Access: Public (no auth) — Cache: 60s
+ */
+export const getTeamById = async (req, res) => {
+  const team = await teamService.getTeamById(req.params.id);
+
+  return res.status(StatusCodes.OK).json({
+    success: true,
+    data: team,
+  });
+};
+
+// ─── Admin Handlers ───────────────────────────────────────────────────
 
 /**
  * POST /api/teams

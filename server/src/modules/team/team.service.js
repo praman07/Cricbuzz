@@ -1,25 +1,51 @@
-import * as teamRepository from "../../repository/team.repository.js";
-// import * as playerRepository from "../../player/player.repository.js";
+import * as teamRepository from "./team.repository.js";
+// import * as playerRepository from "../player/player.repository.js";
 import NotFoundError from "../../shared/errors/NotFound.error.js";
 import ConflictError from "../../shared/errors/conflict.error.js";
 
 /**
- * Service Layer — Team
- * -----------------------------------------------------------------------
- * All business logic for team management: uniqueness validation,
- * squad operations, and cross-module coordination (player existence
- * checks). Throws AppError subclasses on failure; never touches
- * req/res directly.
- * -----------------------------------------------------------------------
+ * Team Service (Admin + Public)
+ * ─────────────────────────────────────────────────────────────────────
+ * PUBLIC  reads : getTeams, getTeamById
+ * ADMIN   writes: createTeam, updateTeam, deleteTeam,
+ *                 getSquad, addPlayerToSquad, removePlayerFromSquad
+ *
+ * All business logic lives here. Throws AppError subclasses on
+ * failure — never touches req/res directly.
+ * ─────────────────────────────────────────────────────────────────────
  */
+
+// ─── Public ──────────────────────────────────────────────────────────
+
+/**
+ * Get all active teams.
+ * @returns {Promise<object[]>}
+ */
+export const getTeams = () => teamRepository.findAll();
+
+/**
+ * Get a single team by ID.
+ * @param {string} id - Team ObjectId
+ * @returns {Promise<object>}
+ * @throws {NotFoundError}
+ */
+export const getTeamById = async (id) => {
+  const team = await teamRepository.findById(id);
+
+  if (!team) throw new NotFoundError("Team not found");
+
+  return team;
+};
+
+// ─── Admin ────────────────────────────────────────────────────────────
 
 /**
  * Create a new team.
- * Enforces uniqueness on both `name` and `shortName`.
+ * Enforces uniqueness on both name and shortName.
  * @param {object} payload - { name, shortName, logo, primaryColor? }
- * @param {string} userId - ID of the user creating the team (audit)
- * @returns {Promise<object>} created team document
- * @throws {ConflictError} if name or shortName already in use
+ * @param {string} userId - audit
+ * @returns {Promise<object>}
+ * @throws {ConflictError}
  */
 export const createTeam = async (payload, userId) => {
   const existing = await teamRepository.findByNameOrShortName(
@@ -31,29 +57,22 @@ export const createTeam = async (payload, userId) => {
     throw new ConflictError("A team with this name or short name already exists");
   }
 
-  return teamRepository.create({
-    ...payload,
-    createdBy: userId,
-    updatedBy: userId,
-  });
+  return teamRepository.create({ ...payload, createdBy: userId, updatedBy: userId });
 };
 
 /**
- * Update a team's details.
- * If name/shortName are being changed, re-checks uniqueness (excluding self).
+ * Update a team's details (partial update).
+ * Re-checks uniqueness when name/shortName are being changed.
  * @param {string} id - Team ObjectId
  * @param {object} payload - Partial team fields
- * @param {string} userId - ID of the user performing the update (audit)
- * @returns {Promise<object>} updated team document
- * @throws {NotFoundError} if team does not exist
- * @throws {ConflictError} if updated name/shortName collides with another team
+ * @param {string} userId - audit
+ * @returns {Promise<object>}
+ * @throws {NotFoundError} | {ConflictError}
  */
 export const updateTeam = async (id, payload, userId) => {
   const team = await teamRepository.findById(id);
 
-  if (!team) {
-    throw new NotFoundError("Team not found");
-  }
+  if (!team) throw new NotFoundError("Team not found");
 
   if (payload.name || payload.shortName) {
     const existing = await teamRepository.findByNameOrShortName(
@@ -73,16 +92,14 @@ export const updateTeam = async (id, payload, userId) => {
 /**
  * Soft-delete a team.
  * @param {string} id - Team ObjectId
- * @param {string} userId - ID of the user performing the deletion (audit)
- * @returns {Promise<object>} soft-deleted team document
- * @throws {NotFoundError} if team does not exist
+ * @param {string} userId - audit
+ * @returns {Promise<object>}
+ * @throws {NotFoundError}
  */
 export const deleteTeam = async (id, userId) => {
   const team = await teamRepository.softDeleteById(id, userId);
 
-  if (!team) {
-    throw new NotFoundError("Team not found");
-  }
+  if (!team) throw new NotFoundError("Team not found");
 
   return team;
 };
@@ -90,49 +107,39 @@ export const deleteTeam = async (id, userId) => {
 /**
  * Get a team's squad (populated player list).
  * @param {string} teamId - Team ObjectId
- * @returns {Promise<object[]>} array of player documents
- * @throws {NotFoundError} if team does not exist
+ * @returns {Promise<object[]>}
+ * @throws {NotFoundError}
  */
 export const getSquad = async (teamId) => {
   const team = await teamRepository.findById(teamId);
 
-  if (!team) {
-    throw new NotFoundError("Team not found");
-  }
+  if (!team) throw new NotFoundError("Team not found");
 
   return team.squadPlayers;
 };
 
 /**
  * Add a player to a team's squad.
- * Verifies both the team and the player exist, then checks the player
- * is not already in the squad before performing the (idempotent) add.
+ * Verifies both team and player exist, guards duplicate additions.
  * @param {string} teamId - Team ObjectId
- * @param {string} playerId - Player ObjectId to add
- * @returns {Promise<object>} updated team document
- * @throws {NotFoundError} if team or player does not exist
- * @throws {ConflictError} if player is already in the squad
+ * @param {string} playerId - Player ObjectId
+ * @returns {Promise<object>}
+ * @throws {NotFoundError} | {ConflictError}
  */
 export const addPlayerToSquad = async (teamId, playerId) => {
   const team = await teamRepository.findById(teamId);
 
-  if (!team) {
-    throw new NotFoundError("Team not found");
-  }
+  if (!team) throw new NotFoundError("Team not found");
 
   const playerExists = await playerRepository.exists(playerId);
 
-  if (!playerExists) {
-    throw new NotFoundError("Player not found");
-  }
+  if (!playerExists) throw new NotFoundError("Player not found");
 
   const alreadyInSquad = team.squadPlayers.some(
-    (player) => player._id.toString() === playerId
+    (p) => p._id.toString() === playerId
   );
 
-  if (alreadyInSquad) {
-    throw new ConflictError("Player is already in this team's squad");
-  }
+  if (alreadyInSquad) throw new ConflictError("Player is already in this team's squad");
 
   return teamRepository.addPlayer(teamId, playerId);
 };
@@ -140,16 +147,14 @@ export const addPlayerToSquad = async (teamId, playerId) => {
 /**
  * Remove a player from a team's squad.
  * @param {string} teamId - Team ObjectId
- * @param {string} playerId - Player ObjectId to remove
- * @returns {Promise<object>} updated team document
- * @throws {NotFoundError} if team does not exist
+ * @param {string} playerId - Player ObjectId
+ * @returns {Promise<object>}
+ * @throws {NotFoundError}
  */
 export const removePlayerFromSquad = async (teamId, playerId) => {
   const teamExists = await teamRepository.exists(teamId);
 
-  if (!teamExists) {
-    throw new NotFoundError("Team not found");
-  }
+  if (!teamExists) throw new NotFoundError("Team not found");
 
   return teamRepository.removePlayer(teamId, playerId);
 };
