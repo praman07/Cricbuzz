@@ -21,6 +21,9 @@ router.get(
   authController.GoogleCallback.bind(authController),
 );
 
+router.post('/register',authController.registerController.bind(authController))
+router.post('/login',authController.logincontroller.bind(authController))
+
 router.get("/health", (req, res) => {
   res.json({
     health: "Good",
