@@ -1,7 +1,13 @@
 import playerModel from "../../../models/players.model.js";
 import BadRequestError from "../../../shared/errors/BadRequest.error.js";
 import playerRoleConstant from "../../../shared/constants/playerRole.constant.js";
+import NotFoundError from "../../../shared/errors/NotFound.error.js";
 
+/**
+ * @description Create a new player
+ * @param {Object} data - Player data
+ * @returns {Object} Player object
+ */
 export const createPlayerService = async (data) => {
   // check all the data is present
   if (!data.name || !data.image || !data.role || !data.country) {
@@ -28,4 +34,18 @@ export const createPlayerService = async (data) => {
     bowlingStyle: data.bowlingStyle,
   });
   return player;
+};
+
+/**
+ * @description Get all players
+ * @route GET /api/players
+ * @access Private
+ * @returns {Object} Array of player objects
+ */
+export const getAllPlayersService = async () => {
+  let players = await playerModel.find({ isDeleted: false });
+  if (!players) {
+    throw new NotFoundError("No players found");
+  }
+  return players;
 };
