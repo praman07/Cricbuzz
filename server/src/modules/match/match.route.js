@@ -1,13 +1,7 @@
 import express from "express";
 import asyncHandler from "../../shared/utils/asyncHandler.js";
-import validateRequest from "../../shared/middlewares/validateRequest.js";
 import { authMiddleware, authorizeRoles } from "../../shared/middlewares/auth.middleware.js";
 import { ROLES } from "../../shared/constants/role.js";
-import {
-  createMatchSchema,
-  updateMatchSchema,
-  matchIdParamSchema,
-} from "./validators/match.validator.js";
 import * as matchController from "./match.controller.js";
 
 /**
@@ -37,7 +31,6 @@ router.get(
  */
 router.get(
   "/:id",
-  validateRequest(matchIdParamSchema),
   asyncHandler(matchController.getMatchById)
 );
 
@@ -52,7 +45,6 @@ router.post(
   "/",
   authMiddleware,
   authorizeRoles(ROLES.SUPER_ADMIN, ROLES.ADMIN),
-  validateRequest(createMatchSchema),
   asyncHandler(matchController.createMatch)
 );
 
@@ -65,7 +57,6 @@ router.patch(
   "/:id",
   authMiddleware,
   authorizeRoles(ROLES.SUPER_ADMIN, ROLES.ADMIN),
-  validateRequest(updateMatchSchema),
   asyncHandler(matchController.updateMatch)
 );
 
@@ -78,7 +69,6 @@ router.delete(
   "/:id",
   authMiddleware,
   authorizeRoles(ROLES.SUPER_ADMIN, ROLES.ADMIN),
-  validateRequest(matchIdParamSchema),
   asyncHandler(matchController.deleteMatch)
 );
 
