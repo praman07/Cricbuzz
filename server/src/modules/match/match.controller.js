@@ -1,13 +1,11 @@
 import { StatusCodes } from "http-status-codes";
 import * as matchService from "./match.service.js";
-import { createMatchDto, updateMatchDto } from "./dto/match.dto.js";
 
 /**
  * Match Controller
  * -----------------------------------------------------------------------
  * HTTP adapter — receives req/res, delegates to the service layer.
  * Async errors forwarded to Errorhandler via asyncHandler in routes.
- * DTOs whitelist fields before service.
  * -----------------------------------------------------------------------
  */
 
@@ -44,7 +42,7 @@ export const getMatchById = async (req, res) => {
  * Access: SUPER_ADMIN | ADMIN
  */
 export const createMatch = async (req, res) => {
-  const match = await matchService.createMatch(createMatchDto(req.body), req.user.id);
+  const match = await matchService.createMatch(req.body, req.user.id);
 
   return res.status(StatusCodes.CREATED).json({
     success: true,
@@ -60,7 +58,7 @@ export const createMatch = async (req, res) => {
 export const updateMatch = async (req, res) => {
   const match = await matchService.updateMatch(
     req.params.id,
-    updateMatchDto(req.body),
+    req.body,
     req.user.id
   );
 
