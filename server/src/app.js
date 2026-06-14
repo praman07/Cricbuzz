@@ -7,6 +7,7 @@ import authRouter from "./modules/auth/auth.routes.js";
 import googleOAuthMiddleware from "./shared/middlewares/googleOAuth.middleware.js";
 import userRoutes from "./modules/users/user.routes.js";
 import playerRouter from "./modules/players/players.routes.js";
+import seriesRoutes from "./modules/series/series.route.js";
 
 import matchRoutes from "./modules/match/match.route.js";
 // import teamRoutes from './modules/team/team.route.js'
@@ -23,6 +24,10 @@ export default function createApp() {
   app.use("/api/match", matchRoutes);
   app.use("/api/auth", authRouter);
   app.use("/api/users", userRoutes);
+
+  // series routes
+  app.use("/api/series", seriesRoutes);
+
   // app.use('/api/team', teamRoutes)
   //----health route-->>
   app.get("/health", (req, res) => {
