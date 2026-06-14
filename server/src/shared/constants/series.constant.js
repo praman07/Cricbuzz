@@ -1,0 +1,5 @@
+export const SERIES_STATUS = {
+  UPCOMING: "UPCOMING",
+  LIVE: "LIVE",
+  COMPLETED: "COMPLETED",
+};

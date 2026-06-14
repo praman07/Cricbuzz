@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { SERIES_STATUS } from "../shared/constants/series.constant";
 
 const seriesSchema = new mongoose.Schema(
   {
@@ -24,8 +25,8 @@ const seriesSchema = new mongoose.Schema(
 
     status: {
       type: String,
-      enum: ["UPCOMING", "LIVE", "COMPLETED"],
-      default: "UPCOMING",
+      enum: Object.values(SERIES_STATUS),
+      default: SERIES_STATUS.UPCOMING,
     },
 
     logo: {
