@@ -1,11 +1,7 @@
-import {
-  createPlayerService,
-  getAllPlayersService,
-  getPlayerByIdService,
-  updatePlayerByIdService,
-  deletePlayerByIdService,
-} from "./players.service.js";
+import PlayersService from "./players.service.js";
 import { StatusCodes } from "http-status-codes";
+
+const playersService = new PlayersService();
 
 /**
  * @description Create a new player
@@ -15,7 +11,7 @@ import { StatusCodes } from "http-status-codes";
  */
 export const createPlayerController = async (req, res) => {
   let data = req.body;
-  let player = await createPlayerService(data);
+  let player = await playersService.createPlayer(data);
   res.status(StatusCodes.CREATED).json({
     success: true,
     message: "Player created successfully",
@@ -30,7 +26,7 @@ export const createPlayerController = async (req, res) => {
  * @returns {Object} Array of player objects
  */
 export const getAllPlayersController = async (req, res) => {
-  let players = await getAllPlayersService();
+  let players = await playersService.getAllPlayers();
   res.status(StatusCodes.OK).json({
     success: true,
     message: "Players fetched successfully",
@@ -46,7 +42,7 @@ export const getAllPlayersController = async (req, res) => {
  */
 export const getPlayerByIdController = async (req, res) => {
   let { id } = req.params;
-  let player = await getPlayerByIdService(id);
+  let player = await playersService.getPlayerById(id);
   res.status(StatusCodes.OK).json({
     success: true,
     message: "Player fetched successfully",
@@ -63,7 +59,7 @@ export const getPlayerByIdController = async (req, res) => {
 export const updatePlayerByIdController = async (req, res) => {
   let { id } = req.params;
   let data = req.body;
-  let updatedPlayer = await updatePlayerByIdService(id, data);
+  let updatedPlayer = await playersService.updatePlayerById(id, data);
 
   res.status(StatusCodes.OK).json({
     success: true,
@@ -80,7 +76,7 @@ export const updatePlayerByIdController = async (req, res) => {
  */
 export const deletePlayerByIdController = async (req, res) => {
   let { id } = req.params;
-  let deletedPlayer = await deletePlayerByIdService(id);
+  await playersService.deletePlayerById(id);
   res.status(StatusCodes.OK).json({
     success: true,
     message: "Player deleted successfully",
