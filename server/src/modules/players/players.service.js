@@ -1,101 +1,65 @@
-import playerModel from "../../models/players.model.js";
+import PlayersRepo from "../../repository/players.repository.js";
+import { createPlayerDto, updatePlayerDto } from "./dto/player.dto.js";
 import BadRequestError from "../../shared/errors/BadRequest.error.js";
 import playerRoleConstant from "../../shared/constants/playerRole.constant.js";
 import NotFoundError from "../../shared/errors/NotFound.error.js";
 
-/**
- * @description Create a new player
- * @param {Object} data - Player data
- * @returns {Object} Player object
- */
-export const createPlayerService = async (data) => {
-  // check all the data is present
-  if (!data.name || !data.image || !data.role || !data.country) {
-    throw new BadRequestError("All fields are required");
+export default class PlayersService {
+  constructor() {
+    this.playersRepo = new PlayersRepo();
   }
 
-  // check the role is valid
-  if (!Object.values(playerRoleConstant).includes(data.role)) {
-    throw new BadRequestError("Invalid role");
+  async createPlayer(data) {
+    const dto = createPlayerDto(data);
+
+    if (!dto.name || !dto.image || !dto.role || !dto.country) {
+      throw new BadRequestError("All fields are required");
+    }
+
+    if (!Object.values(playerRoleConstant).includes(dto.role)) {
+      throw new BadRequestError("Invalid role");
+    }
+
+    const isAlreadyExists = await this.playersRepo.findByName(dto.name);
+    if (isAlreadyExists) {
+      throw new BadRequestError("Player already exists");
+    }
+
+    return await this.playersRepo.create(dto);
   }
 
-  // check if player already exits
-  let isAlreadyExists = await playerModel.findOne({ name: data.name });
-  if (isAlreadyExists) {
-    throw new BadRequestError("Player already exists");
+  async getAllPlayers() {
+    const players = await this.playersRepo.findAll();
+    if (!players || players.length === 0) {
+      throw new NotFoundError("No players found");
+    }
+    return players;
   }
 
-  let player = await playerModel.create({
-    name: data.name,
-    image: data.image,
-    role: data.role,
-    country: data.country,
-    battingStyle: data.battingStyle,
-    bowlingStyle: data.bowlingStyle,
-  });
-  return player;
-};
+  async getPlayerById(id) {
+    const player = await this.playersRepo.findById(id);
+    if (!player) {
+      throw new NotFoundError("Player not found");
+    }
+    return player;
+  }
 
-/**
- * @description Get all players
- * @route GET /api/players
- * @access Private
- * @returns {Object} Array of player objects
- */
-export const getAllPlayersService = async () => {
-  let players = await playerModel.find({ isDeleted: false });
-  if (!players) {
-    throw new NotFoundError("No players found");
-  }
-  return players;
-};
+  async updatePlayerById(id, data) {
+    const isPlayerExists = await this.playersRepo.findById(id);
+    if (!isPlayerExists) {
+      throw new NotFoundError("Player not found");
+    }
 
-/**
- * @description Get a player by id
- * @param {String} id - Player id
- * @returns {Object} Player object
- */
-export const getPlayerByIdService = async (id) => {
-  let player = await playerModel.findById(id);
-  if (!player) {
-    throw new NotFoundError("Player not found");
+    const dto = updatePlayerDto(data);
+    return await this.playersRepo.update(id, dto);
   }
-  if (player.isDeleted === true) {
-    throw new NotFoundError("Player is deleted.");
-  }
-  return player;
-};
 
-/**
- * @description Update a player by id
- * @param {String} id - Player id
- * @param {Object} data - Player data
- * @returns {Object} Player object
- */
-export const updatePlayerByIdService = async (id, data) => {
-  // check if player exists
-  let isPlayerExists = await playerModel.findById(id);
-  if (!isPlayerExists) {
-    throw new NotFoundError("Player not found");
-  }
-  // update the player
-  let updatedPlayer = await playerModel.findByIdAndUpdate(id, data, {
-    new: true,
-    runValidators: true,
-  });
-  return updatedPlayer;
-};
+  async deletePlayerById(id) {
+    const isPlayerExists = await this.playersRepo.findById(id);
+    if (!isPlayerExists) {
+      throw new NotFoundError("Player not found");
+    }
 
-/**
- * @description Delete a player by id
- * @param {String} id - Player id
- * @returns {Object} Player object
- */
-export const deletePlayerByIdService = async (id) => {
-  let isPlayerExists = await playerModel.findById(id);
-  if (!isPlayerExists) {
-    throw new NotFoundError("Player not found");
+    return await this.playersRepo.delete(id);
   }
-  let deletedPlayer = await playerModel.findByIdAndDelete(id);
-  return deletedPlayer;
-};
+}
