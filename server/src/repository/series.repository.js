@@ -1,39 +1,39 @@
 import { SeriesModel } from "../models/series.model.js";
 
-export class SeriesRepository {
+export default class SeriesRepository {
   async create(payload) {
-    return await SeriesModel.create(payload);
+    return SeriesModel.create(payload);
   }
 
   async findAll() {
-    return await SeriesModel.find({
+    return SeriesModel.find({
       isDeleted: false,
     });
   }
 
   async findById(seriesId) {
-    return await SeriesModel.findOne({
+    return SeriesModel.findOne({
       _id: seriesId,
       isDeleted: false,
     });
   }
 
   async findByName(name) {
-    return await SeriesModel.findOne({
+    return SeriesModel.findOne({
       name,
       isDeleted: false,
     });
   }
 
   async findBySeason(season) {
-    return await SeriesModel.findOne({
+    return SeriesModel.findOne({
       season,
       isDeleted: false,
     });
   }
 
   async update(seriesId, payload) {
-    return await SeriesModel.findOneAndUpdate(
+    return SeriesModel.findOneAndUpdate(
       {
         _id: seriesId,
         isDeleted: false,
@@ -46,7 +46,7 @@ export class SeriesRepository {
   }
 
   async softDelete(seriesId) {
-    return await SeriesModel.findOneAndUpdate(
+    return SeriesModel.findOneAndUpdate(
       {
         _id: seriesId,
         isDeleted: false,
@@ -60,5 +60,3 @@ export class SeriesRepository {
     );
   }
 }
-
-export default SeriesRepository;

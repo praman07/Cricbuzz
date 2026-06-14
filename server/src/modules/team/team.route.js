@@ -1,7 +1,10 @@
 import express from "express";
 import asyncHandler from "../../shared/utils/asyncHandler.js";
 import validateRequest from "../../shared/middlewares/validateRequest.js";
-import { authMiddleware, authorizeRoles } from "../../shared/middlewares/auth.middleware.js";
+import {
+  authMiddleware,
+  authorizeRoles,
+} from "../../shared/middlewares/auth.middleware.js";
 // import { responseCache } from "../../cache/responseCache.js";
 import { ROLES } from "../../shared/constants/role.js";
 import {
@@ -38,7 +41,7 @@ const router = express.Router();
 router.get(
   "/",
   // responseCache(60),
-  asyncHandler(adminController.getTeams)
+  asyncHandler(adminController.getTeams),
 );
 
 /**
@@ -50,7 +53,7 @@ router.get(
   "/:id",
   // responseCache(60),
   validateRequest(teamIdParamSchema),
-  asyncHandler(adminController.getTeamById)
+  asyncHandler(adminController.getTeamById),
 );
 
 // ─── Admin Routes (auth required) ────────────────────────────────────
@@ -65,7 +68,7 @@ router.post(
   authMiddleware,
   authorizeRoles(ROLES.SUPER_ADMIN, ROLES.ADMIN),
   validateRequest(createTeamSchema),
-  asyncHandler(adminController.createTeam)
+  asyncHandler(adminController.createTeam),
 );
 
 /**
@@ -78,7 +81,7 @@ router.patch(
   authMiddleware,
   authorizeRoles(ROLES.SUPER_ADMIN, ROLES.ADMIN),
   validateRequest(updateTeamSchema),
-  asyncHandler(adminController.updateTeam)
+  asyncHandler(adminController.updateTeam),
 );
 
 /**
@@ -91,7 +94,7 @@ router.delete(
   authMiddleware,
   authorizeRoles(ROLES.SUPER_ADMIN, ROLES.ADMIN),
   validateRequest(teamIdParamSchema),
-  asyncHandler(adminController.deleteTeam)
+  asyncHandler(adminController.deleteTeam),
 );
 
 /**
@@ -104,7 +107,7 @@ router.get(
   authMiddleware,
   authorizeRoles(ROLES.SUPER_ADMIN, ROLES.ADMIN),
   validateRequest(getSquadSchema),
-  asyncHandler(adminController.getSquad)
+  asyncHandler(adminController.getSquad),
 );
 
 /**
@@ -117,7 +120,7 @@ router.post(
   authMiddleware,
   authorizeRoles(ROLES.SUPER_ADMIN, ROLES.ADMIN),
   validateRequest(addPlayerToSquadSchema),
-  asyncHandler(adminController.addPlayerToSquad)
+  asyncHandler(adminController.addPlayerToSquad),
 );
 
 /**
@@ -130,7 +133,7 @@ router.delete(
   authMiddleware,
   authorizeRoles(ROLES.SUPER_ADMIN, ROLES.ADMIN),
   validateRequest(removePlayerFromSquadSchema),
-  asyncHandler(adminController.removePlayerFromSquad)
+  asyncHandler(adminController.removePlayerFromSquad),
 );
 
 export default router;
