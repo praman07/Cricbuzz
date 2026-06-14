@@ -1,6 +1,7 @@
 import { StatusCodes } from "http-status-codes";
 import { app_config } from "../../shared/constants/app.constant.js";
 import AuthService from "./auth.service.js";
+import { buildSuccessResponse } from "../../shared/utils/buildSuccessRespose.js";
 
 export default class AuthController {
   constructor() {
@@ -89,4 +90,38 @@ export default class AuthController {
       user,
     });
   }
+ /**
+ * @route   GET /auth/me
+ * @desc    get the current user details. 
+ *          
+ * @access  Public
+ */
+
+  async getMe(req,res){
+    buildSuccessResponse(res,"User Verified",200,req.user)
+
+  }
+
+
+  /**
+ * @route   GET /auth/refresh
+ * @desc    Generates a new access token using the refresh token
+ *          stored in cookies and sends it back as an HTTP-only cookie.
+ * @access  Public
+ */
+async refreshAccessToken(req, res) {
+  const { accessToken } = await this.authService.refreshAccessToken(
+    req.cookies.refreshToken
+  );
+
+  res.cookie(
+    "accessToken",
+    accessToken,
+    app_config.cookies.ACESSS_COKKIE
+  );
+
+  return res.status(StatusCodes.OK).json({
+    message: "Access token generated successfully",
+  });
+}
 }
