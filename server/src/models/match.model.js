@@ -1,71 +1,100 @@
 import { Schema, model } from "mongoose";
+import { MATCH_STATUS } from "../shared/constants/matchStatus.js";
 
-
-// ─── Match Schema ──────────────────────────────────────────────────────────
-// Represents a cricket match between two teams.
-// Each match stores which teams are playing, the venue, the format,
-// the scheduled start time, and its current lifecycle status.
-//
-// NOTE: We use a soft-delete pattern (isDeleted flag) so that
-// historical match data is never permanently lost from the database.
-// ────────────────────────────────────────────────────────────────────────────
+const playingPlayerSchema = new Schema(
+  {
+    player: {
+      type: Schema.Types.ObjectId,
+      ref: "Player",
+      required: true,
+    },
+    isCaptain: {
+      type: Boolean,
+      default: false,
+    },
+    isWicketKeeper: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  { _id: false }
+);
 
 const matchSchema = new Schema(
   {
-    // Name of the first team (e.g. "India", "Australia")
-    teamA: {
-      type: String,
-      required: [true, "Team A name is required"],
-      trim: true,
+    seriesId: {
+      type: Schema.Types.ObjectId,
+      ref: "Series",
+      required: [true, "Series is required"],
     },
-
-    // Name of the second team
-    teamB: {
+    matchNumber: {
       type: String,
-      required: [true, "Team B name is required"],
-      trim: true,
     },
-
-    // Current lifecycle state of the match
-    // Transitions: SCHEDULED → LIVE → COMPLETED  (or ABANDONED at any point)
-    status: {
-      type: String,
-      enum: ["SCHEDULED", "LIVE", "COMPLETED", "ABANDONED"],
-      default: "SCHEDULED",
-    },
-
-    // Ground / stadium where the match is being played
     venue: {
       type: String,
       required: [true, "Venue is required"],
       trim: true,
     },
-
-    // Cricket format — affects overs, playing conditions, etc.
-    format: {
-      type: String,
-      enum: ["T20", "ODI", "TEST"],
-      required: [true, "Match format is required"],
-    },
-
-    // When the match is scheduled to begin (UTC)
-    startDate: {
+    startTime: {
       type: Date,
-      required: [true, "Start date is required"],
+      required: [true, "Start time is required"],
     },
-
-    // Soft-delete flag — filtered out in repository queries
+    status: {
+      type: String,
+      enum: Object.values(MATCH_STATUS),
+      default: MATCH_STATUS.UPCOMING,
+    },
+    team1: {
+      type: Schema.Types.ObjectId,
+      ref: "Team",
+      required: [true, "Team 1 is required"],
+    },
+    team2: {
+      type: Schema.Types.ObjectId,
+      ref: "Team",
+      required: [true, "Team 2 is required"],
+    },
+    tossWinner: {
+      type: Schema.Types.ObjectId,
+      ref: "Team",
+    },
+    tossDecision: {
+      type: String,
+      enum: ["BAT", "BOWL"],
+    },
+    playingXI: {
+      team1: [playingPlayerSchema],
+      team2: [playingPlayerSchema],
+    },
+    winner: {
+      type: Schema.Types.ObjectId,
+      ref: "Team",
+    },
+    result: {
+      type: String,
+    },
     isDeleted: {
       type: Boolean,
       default: false,
     },
+    createdBy: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
+    updatedBy: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
   },
-  { timestamps: true } // adds createdAt + updatedAt automatically
+  { timestamps: true }
 );
 
+// ─── Indexes ───────────────────────────────────────────────────────────────
+matchSchema.index({ status: 1, startTime: 1, isDeleted: 1 });
+matchSchema.index({ seriesId: 1, startTime: 1, isDeleted: 1 });
+matchSchema.index({ team1: 1, startTime: -1, isDeleted: 1 });
+matchSchema.index({ team2: 1, startTime: -1, isDeleted: 1 });
 
-// ─── Export ────────────────────────────────────────────────────────────────
 const matchModel = model("Match", matchSchema);
 
 export default matchModel;
-
