@@ -6,6 +6,8 @@ import { StatusCodes } from 'http-status-codes'
 import BadRequestError from "../../shared/errors/BadRequest.error.js";
 import ConflictError from "../../shared/errors/conflict.error.js";
 import UnprocessableEntityError from "../../shared/errors/UnprocessableEntitiy.error.js";
+import UnauthorizeError from "../../shared/errors/Unauthorized.error.js";
+
 export default class AuthService {
   constructor() {
     this.userRepo = new UserRepo();
@@ -69,6 +71,7 @@ export default class AuthService {
       accessToken,
       refreshToken,
     };
+    
   }
 
   /**
@@ -230,4 +233,42 @@ export default class AuthService {
       refreshToken,
     };
   }
+
+async refreshAccessToken(refreshToken) {
+  // Check if refresh token is provided
+  if (!refreshToken) {
+    throw new UnauthorizeError("UnAuthorized User", null);
+  }
+
+  // Verify refresh token and decode its payload
+  const decode = jwt.verify(refreshToken, env.JWT_REFRESH_SECRET);
+  
+
+  // Find user from database using decoded user id
+  const user = await this.userRepo.findById(decode._id);
+
+  // Optional: Check if user exists
+  // if (!user) {
+  //   throw new UnauthorizeError("User not found", null);
+  // }
+
+  // Create payload for new access token
+  const payload = {
+    _id: user._id,
+    email: user.email,
+    picture: user.picture,
+    role: user.role,
+    name: user.name,
+  };
+
+  // Generate new access token
+  const accessToken = jwt.sign(payload, env.JWT_ACCESS_SECRET, {
+    expiresIn: "1h",
+  });
+
+  // Return newly generated access token
+  return {
+    accessToken,
+  };
+}
 }
