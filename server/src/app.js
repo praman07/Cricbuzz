@@ -7,7 +7,7 @@ import authRouter from './modules/auth/auth.routes.js'
 import googleOAuthMiddleware from "./shared/middlewares/googleOAuth.middleware.js";
 import userRoutes from './modules/users/user.routes.js'
 import matchRoutes from './modules/match/match.route.js'
-import teamRoutes from './modules/team/team.route.js'
+// import teamRoutes from './modules/team/team.route.js'
 export default function createApp() {
   const app = express();
 
@@ -22,7 +22,7 @@ export default function createApp() {
   app.use('/api/match', matchRoutes)
   app.use('/api/auth', authRouter)
   app.use('/api/users', userRoutes)
-  app.use('/api/team', teamRoutes)
+  // app.use('/api/team', teamRoutes)
   //----health route-->>
   app.get("/health", (req, res) => {
     res.json({
