@@ -1,6 +1,6 @@
 import { Router } from "express";
 import MatchController from "./match.controller.js";
-import validateRequest from "../../shared/middleware/validateRequest.js";
+import validateRequest from "../../shared/middlewares/validateRequest.js";
 import {
   createMatchValidator,
   updateMatchValidator,

@@ -3,8 +3,8 @@ import UserController from "./user.controller.js";
 
 
 
-import { authMiddleware, authorizeRoles } from "../../../shared/middlewares/auth.middleware.js";
-import { ROLES } from "../../../shared/constants/role.js";
+import { authMiddleware, authorizeRoles } from "../../shared/middlewares/auth.middleware.js";
+import { ROLES } from "../../shared/constants/role.js";
 
 const router = express.Router();
 const userController = new UserController();

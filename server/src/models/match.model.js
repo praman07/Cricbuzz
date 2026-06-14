@@ -68,3 +68,4 @@ const matchSchema = new Schema(
 const matchModel = model("Match", matchSchema);
 
 export default matchModel;
+

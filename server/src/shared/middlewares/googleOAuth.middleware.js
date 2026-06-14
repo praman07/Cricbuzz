@@ -8,8 +8,8 @@ app.use(passport.initialize())
 
 
 passport.use(new GoogleStrategy({
-    clientID:env.GOOGLE_CLEINT_ID,
-    clientSecret: env.GOOGLE_CLIENT_SECRET_KEY,
+    clientID:env.GOOGLE_CLIENT_ID,
+    clientSecret: env.GOOGLE_CLIENT_SECRET,
     callbackURL: env.GOOGLE_CALLBACK_URL
   },
   (accessToken, refreshToken, profile, cb)=> {

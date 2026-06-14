@@ -1,11 +1,11 @@
-import UserRepo from "../../../repository/user.repository.js";
+import UserRepo from "../../repository/user.repository.js";
 import jwt from "jsonwebtoken";
-import env from "../../../config/env.js";
-import AppError from "../../../shared/errors/App.error.js";
-import {StatusCodes} from 'http-status-codes'
-import BadRequestError from "../../../shared/errors/BadRequest.error.js";
-import ConflictError from "../../../shared/errors/conflict.error.js";
-import UnprocessableEntityError from "../../../shared/errors/UnprocessableEntitiy.error.js";
+import env from "../../config/env.js";
+import AppError from "../../shared/errors/App.error.js";
+import { StatusCodes } from 'http-status-codes'
+import BadRequestError from "../../shared/errors/BadRequest.error.js";
+import ConflictError from "../../shared/errors/conflict.error.js";
+import UnprocessableEntityError from "../../shared/errors/UnprocessableEntitiy.error.js";
 export default class AuthService {
   constructor() {
     this.userRepo = new UserRepo();
@@ -79,7 +79,7 @@ export default class AuthService {
    * - Issues JWT tokens
    */
   async registerUser(data) {
-    const { name, email, password,role } = data;
+    const { name, email, password, role } = data;
 
     // Validate required fields
     if (!name?.trim() || !email?.trim() || !password?.trim()) {

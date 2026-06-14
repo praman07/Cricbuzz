@@ -3,29 +3,29 @@ import env from '../../config/env.js'
 import ForbiddenError from "../errors/Forbidden.error.js";
 import jwt from 'jsonwebtoken'
 
-export const authMiddleware=(req,res,next)=>{
-    try {
-        const token=req.cookies?.accessToken
-     
-     if(!token){
-         throw new UnauthorizeError("Please login first");
-     }
-     const decoded = jwt.verify(
+export const authMiddleware = (req, res, next) => {
+  try {
+    const token = req.cookies?.accessToken
+
+    if (!token) {
+      throw new UnauthorizeError("Please login first");
+    }
+    const decoded = jwt.verify(
       token,
-    env.JWT_ACCESS_SECRET
+      env.JWT_ACCESS_SECRET
     );
 
     req.user = decoded;
 
     next();
-        
-    } catch (err) {
-      console.log("error",err)
-        if(err.name==="TokenExpiredError"){
-            throw new UnauthorizeError("Access Token Expired")
-        }
-        throw new UnauthorizeError("Token Not Found")
+
+  } catch (err) {
+    console.log("error", err)
+    if (err.name === "TokenExpiredError") {
+      throw new UnauthorizeError("Access Token Expired")
     }
+    throw new UnauthorizeError("Token Not Found")
+  }
 }
 
 export const authorizeRoles = (...roles) => {
@@ -35,7 +35,7 @@ export const authorizeRoles = (...roles) => {
         new ForbiddenError("Authentication required")
       );
     }
-    console.log("roles",req.user.role)
+    console.log("roles", req.user.role)
 
     if (!roles.includes(req.user.role)) {
       return next(

@@ -1,5 +1,5 @@
 import { StatusCodes } from "http-status-codes";
-import { app_config } from "../../../shared/constants/app.constant.js";
+import { app_config } from "../../shared/constants/app.constant.js";
 import AuthService from "./auth.service.js";
 
 export default class AuthController {

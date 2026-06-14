@@ -17,15 +17,16 @@ const envSchema = z.object({
   JWT_REFRESH_SECRET: z.string(),
 
   // Google OAuth
-  GOOGLE_CLEINT_ID:z.string(),
-GOOGLE_CLIENT_SECRET_KEY:z.string(),
-GOOGLE_CALLBACK_URL:z.string()
+  GOOGLE_CLIENT_ID: z.string(),
+  GOOGLE_CLIENT_SECRET: z.string(),
+  GOOGLE_CALLBACK_URL: z.string()
 });
 
 const parsed = envSchema.safeParse(process.env);
 
 if (!parsed.success) {
-logger.info("check your env's")
+  logger.info("check your env's")
+  process.exit(1);
 }
 
 export default parsed.data;

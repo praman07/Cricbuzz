@@ -1,4 +1,4 @@
-import matchModel from "./match.model.js";
+import matchModel from "../models/match.model.js";
 
 
 // ─── Match Repository ──────────────────────────────────────────────────────

@@ -1,4 +1,4 @@
-import MatchRepo from "./match.repository.js";
+import MatchRepo from "../../repository/match.repository.js";
 import { createMatchDto, updateMatchDto } from "./dto/match.dto.js";
 
 

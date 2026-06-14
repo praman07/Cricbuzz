@@ -1,7 +1,7 @@
-import playerModel from "../../../models/players.model.js";
-import BadRequestError from "../../../shared/errors/BadRequest.error.js";
-import playerRoleConstant from "../../../shared/constants/playerRole.constant.js";
-import NotFoundError from "../../../shared/errors/NotFound.error.js";
+import playerModel from "../../models/players.model.js";
+import BadRequestError from "../../shared/errors/BadRequest.error.js";
+import playerRoleConstant from "../../shared/constants/playerRole.constant.js";
+import NotFoundError from "../../shared/errors/NotFound.error.js";
 
 /**
  * @description Create a new player
