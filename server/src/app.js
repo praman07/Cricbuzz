@@ -10,7 +10,7 @@ import playerRouter from "./modules/players/players.routes.js";
 import seriesRoutes from "./modules/series/series.route.js";
 
 import matchRoutes from "./modules/match/match.route.js";
-// import teamRoutes from './modules/team/team.route.js'
+import teamRoutes from './modules/team/team.route.js'
 export default function createApp() {
   const app = express();
 
@@ -27,8 +27,8 @@ export default function createApp() {
 
   // series routes
   app.use("/api/series", seriesRoutes);
-
-  // app.use('/api/team', teamRoutes)
+  //team routes
+  app.use('/api/team', teamRoutes)
   //----health route-->>
   app.get("/health", (req, res) => {
     res.json({

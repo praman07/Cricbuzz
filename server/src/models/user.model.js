@@ -1,5 +1,5 @@
 import { Schema, model } from "mongoose";
-import { object } from "zod";
+
 import { ROLES } from "../shared/constants/role.js";
 import bcrypt from 'bcrypt'
 const userSchema = new Schema(

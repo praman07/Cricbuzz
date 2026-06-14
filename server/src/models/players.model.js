@@ -33,6 +33,6 @@ const playerSchema = mongoose.Schema(
   { timestamps: true },
 );
 
-const playerModel = mongoose.model("player", playerSchema);
+const playerModel = mongoose.model("Player", playerSchema);
 
 export default playerModel;

@@ -54,7 +54,7 @@ export const getTeamById = async (req, res) => {
  * Access: SUPER_ADMIN | ADMIN
  */
 export const createTeam = async (req, res) => {
-  const team = await teamService.createTeam(createTeamDto(req.body), req.user.id);
+  const team = await teamService.createTeam(createTeamDto(req.body), req.user._id);
 
   return res.status(StatusCodes.CREATED).json({
     success: true,
@@ -71,7 +71,7 @@ export const updateTeam = async (req, res) => {
   const team = await teamService.updateTeam(
     req.params.id,
     updateTeamDto(req.body),
-    req.user.id
+    req.user._id
   );
 
   return res.status(StatusCodes.OK).json({
@@ -86,7 +86,7 @@ export const updateTeam = async (req, res) => {
  * Access: SUPER_ADMIN | ADMIN
  */
 export const deleteTeam = async (req, res) => {
-  const team = await teamService.deleteTeam(req.params.id, req.user.id);
+  const team = await teamService.deleteTeam(req.params.id, req.user._id);
 
   return res.status(StatusCodes.OK).json({
     success: true,
