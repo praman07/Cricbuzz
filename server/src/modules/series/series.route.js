@@ -1,5 +1,5 @@
 import { Router } from "express";
-import SeriesController from "./series.controller";
+import SeriesController from "./series.controller.js";
 
 const router = Router();
 const seriesController = new SeriesController();

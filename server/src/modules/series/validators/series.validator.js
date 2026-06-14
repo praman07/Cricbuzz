@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { SERIES_STATUS } from "../../../shared/constants/series.constant";
+import { SERIES_STATUS } from "../../../shared/constants/series.constant.js";
 
 export const createSeriesSchema = z.object({
   body: z.object({

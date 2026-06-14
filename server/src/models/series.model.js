@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { SERIES_STATUS } from "../shared/constants/series.constant";
+import { SERIES_STATUS } from "../shared/constants/series.constant.js";
 
 const seriesSchema = new mongoose.Schema(
   {

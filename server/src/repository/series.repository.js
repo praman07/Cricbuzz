@@ -1,4 +1,4 @@
-import { SeriesModel } from "../models/series.model";
+import { SeriesModel } from "../models/series.model.js";
 
 export class SeriesRepository {
   async create(payload) {

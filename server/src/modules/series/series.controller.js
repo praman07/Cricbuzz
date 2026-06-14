@@ -1,4 +1,4 @@
-import SeriesService from "./series.service";
+import SeriesService from "./series.service.js";
 
 export default class SeriesController {
   constructor() {
