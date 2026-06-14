@@ -1,6 +1,7 @@
 import SeriesRepository from "../../repository/series.repository.js";
 import ConflictError from "../../shared/errors/conflict.error.js";
 import NotFoundError from "../../shared/errors/NotFound.error.js";
+import SeriesDto from "./dto/series.dto.js";
 
 export default class SeriesService {
   constructor() {
@@ -26,7 +27,9 @@ export default class SeriesService {
   }
 
   async getAllSeries() {
-    return await this.seriesRepository.findAll();
+    const series = await this.seriesRepository.findAll();
+
+    return SeriesDto.toResponseList(series);
   }
 
   async getSeriesById(seriesId) {
@@ -36,7 +39,7 @@ export default class SeriesService {
       throw new NotFoundError("Series not found");
     }
 
-    return series;
+    return SeriesDto.toResponse(series);
   }
 
   async updateSeries(seriesId, payload) {
