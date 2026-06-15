@@ -41,6 +41,7 @@ export default class SeriesRepository {
       payload,
       {
         new: true,
+        runValidators: true,
       },
     );
   }

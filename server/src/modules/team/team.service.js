@@ -1,5 +1,5 @@
 import * as teamRepository from "../../repository/team.repository.js";
-// import * as playerRepository from "../player/player.repository.js";
+import * as playerRepository from "../../repository/players.repository.js"
 import NotFoundError from "../../shared/errors/NotFound.error.js";
 import ConflictError from "../../shared/errors/conflict.error.js";
 

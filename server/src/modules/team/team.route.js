@@ -1,11 +1,7 @@
 import express from "express";
 import asyncHandler from "../../shared/utils/asyncHandler.js";
 import validateRequest from "../../shared/middlewares/validateRequest.js";
-import {
-  authMiddleware,
-  authorizeRoles,
-} from "../../shared/middlewares/auth.middleware.js";
-// import { responseCache } from "../../cache/responseCache.js";
+import { authMiddleware, authorizeRoles } from "../../shared/middlewares/auth.middleware.js";
 import { ROLES } from "../../shared/constants/role.js";
 import {
   createTeamSchema,
@@ -17,18 +13,6 @@ import {
 } from "./validators/team.validator.js";
 import * as adminController from "./team.controller.js";
 
-/**
- * Team Routes
- * ─────────────────────────────────────────────────────────────────────
- * PUBLIC  (no auth, cached)   — GET /api/teams, GET /api/teams/:id
- * ADMIN   (auth + role check) — POST, PATCH, DELETE /api/teams
- *                               GET/POST/DELETE /api/teams/:teamId/squad
- *
- * Public routes are registered FIRST so Express's first-match-wins
- * serves cached unauthenticated GETs without reaching admin handlers.
- * ─────────────────────────────────────────────────────────────────────
- */
-
 const router = express.Router();
 
 // ─── Public Routes (no auth) ─────────────────────────────────────────
@@ -36,22 +20,35 @@ const router = express.Router();
 /**
  * GET /api/teams
  * List all active teams.
- * Cache: 60s TTL
+ * Access: Public (no auth)
  */
 router.get(
   "/",
-  // responseCache(60),
-  asyncHandler(adminController.getTeams),
+  asyncHandler(adminController.getTeams)
+);
+
+// ─── Squad route PEHLE rakho — warna /:id match kar leta hai ─────────
+
+/**
+ * GET /api/teams/:teamId/squad
+ * Get a team's squad.
+ * Access: SUPER_ADMIN | ADMIN
+ */
+router.get(
+  "/:teamId/squad",
+  authMiddleware,
+  authorizeRoles(ROLES.SUPER_ADMIN, ROLES.ADMIN),
+  validateRequest(getSquadSchema),
+  asyncHandler(adminController.getSquad)
 );
 
 /**
  * GET /api/teams/:id
  * Get team details by ID (with populated squad).
- * Cache: 60s TTL
+ * Access: Public (no auth)
  */
 router.get(
   "/:id",
-  // responseCache(60),
   validateRequest(teamIdParamSchema),
   asyncHandler(adminController.getTeamById),
 );
@@ -97,43 +94,5 @@ router.delete(
   asyncHandler(adminController.deleteTeam),
 );
 
-/**
- * GET /api/teams/:teamId/squad
- * Get a team's squad.
- * Access: SUPER_ADMIN | ADMIN
- */
-router.get(
-  "/:teamId/squad",
-  authMiddleware,
-  authorizeRoles(ROLES.SUPER_ADMIN, ROLES.ADMIN),
-  validateRequest(getSquadSchema),
-  asyncHandler(adminController.getSquad),
-);
-
-/**
- * POST /api/teams/:teamId/squad
- * Add a player to a team's squad.
- * Access: SUPER_ADMIN | ADMIN
- */
-router.post(
-  "/:teamId/squad",
-  authMiddleware,
-  authorizeRoles(ROLES.SUPER_ADMIN, ROLES.ADMIN),
-  validateRequest(addPlayerToSquadSchema),
-  asyncHandler(adminController.addPlayerToSquad),
-);
-
-/**
- * DELETE /api/teams/:teamId/squad/:playerId
- * Remove a player from a team's squad.
- * Access: SUPER_ADMIN | ADMIN
- */
-router.delete(
-  "/:teamId/squad/:playerId",
-  authMiddleware,
-  authorizeRoles(ROLES.SUPER_ADMIN, ROLES.ADMIN),
-  validateRequest(removePlayerFromSquadSchema),
-  asyncHandler(adminController.removePlayerFromSquad),
-);
 
 export default router;
