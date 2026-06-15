@@ -42,8 +42,8 @@ router.get(
  */
 router.post(
   "/register",
-  // authMiddleware,
-  // authorizeRoles(ROLES.SUPER_ADMIN),
+  authMiddleware,
+  authorizeRoles(ROLES.SUPER_ADMIN),
   asyncHandler(authController.registerController.bind(authController))
 );
 

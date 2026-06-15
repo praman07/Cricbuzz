@@ -25,7 +25,7 @@ const userSchema = new Schema(
     role: {
       type: String,
       enum: Object.values(ROLES),
-      default: ROLES.SUPER_ADMIN,
+      default: ROLES.ADMIN,
     },
     isDeleted: {
       type: Boolean,
