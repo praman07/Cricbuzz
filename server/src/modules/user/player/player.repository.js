@@ -1,4 +1,4 @@
-import playerModel from "../../../models/player.model.js";
+import playerModel from "../../../models/players.model.js";
 
 /**
  * Repository Layer — Player (Public)

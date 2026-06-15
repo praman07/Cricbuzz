@@ -8,9 +8,18 @@ import googleOAuthMiddleware from "./shared/middlewares/googleOAuth.middleware.j
 import userRoutes from "./modules/users/user.routes.js";
 import playerRouter from "./modules/players/players.routes.js";
 import seriesRoutes from "./modules/series/series.route.js";
-
 import matchRoutes from "./modules/match/match.route.js";
-import teamRoutes from './modules/team/team.route.js'
+import teamRoutes from "./modules/team/team.route.js";
+
+// ─── Public Routes (user/) ────────────────────────────────────────────
+import homePublicRouter from "./modules/user/home/home.route.js";
+import matchPublicRouter from "./modules/user/match/match.route.js";
+import seriesPublicRouter from "./modules/user/series/series.route.js";
+import teamPublicRouter from "./modules/user/team/team.route.js";
+import playerPublicRouter from "./modules/user/player/player.route.js";
+import searchPublicRouter from "./modules/user/search/search.route.js";
+import commentaryPublicRouter from "./modules/user/commentary/commentary.route.js";
+
 export default function createApp() {
   const app = express();
 
@@ -20,26 +29,33 @@ export default function createApp() {
 
   securityMiddleware(app);
   googleOAuthMiddleware(app);
-  //---match route--->>
+
+  // ─── Public Routes (no auth, cached) ────────────────────────────────
+  // NOTE: Public routes PEHLE mount karo —
+  // Express first-match-wins: public GETs cached handlers se serve honge,
+  // admin POST/PATCH/DELETE fall-through karenge admin routers tak.
+  app.use("/api/home", homePublicRouter);
+  app.use("/api/matches", matchPublicRouter);
+  app.use("/api/matches/:matchId/commentary", commentaryPublicRouter);
+  app.use("/api/series", seriesPublicRouter);
+  app.use("/api/teams", teamPublicRouter);
+  app.use("/api/players", playerPublicRouter);
+  app.use("/api/search", searchPublicRouter);
+
+  // ─── Admin Routes ────────────────────────────────────────────────────
   app.use("/api/match", matchRoutes);
   app.use("/api/auth", authRouter);
   app.use("/api/users", userRoutes);
-
-  // series routes
   app.use("/api/series", seriesRoutes);
-  //team routes
-  app.use('/api/team', teamRoutes)
-  //----health route-->>
-  app.get("/health", (req, res) => {
-    res.json({
-      message: "healthy",
-    });
-  });
-
-  //----players routes------
+  app.use("/api/team", teamRoutes);
   app.use("/api/players", playerRouter);
 
-  //----- global error handling middleware ------
+  // ─── Health Check ───────────────────────────────────────────────────
+  app.get("/health", (req, res) => {
+    res.json({ message: "healthy" });
+  });
+
+  // ─── Global Error Handler ────────────────────────────────────────────
   app.use(Errorhandler);
 
   return app;

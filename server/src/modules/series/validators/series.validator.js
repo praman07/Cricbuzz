@@ -14,6 +14,9 @@ export const createSeriesSchema = z.object({
 
 // Validation schema for updating a series
 export const updateSeriesSchema = z.object({
+  params: z.object({
+    id: z.string().length(24),  // ← ye add karo
+  }),
   body: z.object({
     name: z.string().trim().min(1).optional(),
     shortName: z.string().trim().min(1).optional(),

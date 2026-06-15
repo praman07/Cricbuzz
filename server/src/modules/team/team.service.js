@@ -1,7 +1,10 @@
 import * as teamRepository from "../../repository/team.repository.js";
-import * as playerRepository from "../../repository/players.repository.js"
+import PlayersRepo from "../../repository/players.repository.js";
 import NotFoundError from "../../shared/errors/NotFound.error.js";
 import ConflictError from "../../shared/errors/conflict.error.js";
+
+// Class-based PlayersRepo ka instance
+const playerRepo = new PlayersRepo();
 
 /**
  * Team Service (Admin + Public)
@@ -131,7 +134,7 @@ export const addPlayerToSquad = async (teamId, playerId) => {
 
   if (!team) throw new NotFoundError("Team not found");
 
-  const playerExists = await playerRepository.exists(playerId);
+  const playerExists = await playerRepo.exists(playerId);
 
   if (!playerExists) throw new NotFoundError("Player not found");
 

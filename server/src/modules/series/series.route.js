@@ -49,7 +49,7 @@ router.post(
 router.patch(
   "/:id",
   authorizeRoles(ROLES.ADMIN, ROLES.SUPER_ADMIN),
-  validateRequest(seriesIdParamSchema),
+  // validateRequest(seriesIdParamSchema),
   validateRequest(updateSeriesSchema),
   asyncHandler(seriesController.updateSeries.bind(seriesController)),
 );
