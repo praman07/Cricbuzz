@@ -1,3 +1,4 @@
+import createSuperAdmin from "./seed.js";
 import createApp from "./app.js"
 import env from "./config/env.js"
 import logger from "./config/logger.js";
@@ -7,7 +8,8 @@ const app = createApp()
 
 
 function startServer() {
-  connectDB().then(() => {
+  connectDB().then(async() => {
+     await createSuperAdmin();
     app.listen(env.PORT, () => {
       logger.info({ port: env.PORT }, "Server is running on port");
     })
