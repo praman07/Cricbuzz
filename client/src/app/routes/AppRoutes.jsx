@@ -4,11 +4,12 @@ import AuthLayout from "../layouts/AuthLayout";
 import Register from "../../features/auth/ui/screens/Register";
 import Login from "../../features/auth/ui/screens/Login";
 import DashBoardLayout from "../layouts/DashBoardLayout";
-import Home from "../../features/dashboard/ui/screens/Home";
+import Home from "../../features/home/ui/screen/Home";
 import { useDispatch } from "react-redux";
 import { currentUser } from "../../features/auth/state/auth/authAction";
 import PublicRoute from "../ProtectedRoutes/PublicRoute";
 import ProtectedRoute from "../ProtectedRoutes/ProtectedRoute";
+import DashboardHome from "../../features/dashboard/ui/screens/dashboardHome";
 const AppRoutes = () => {
   let dispatch = useDispatch();
   useEffect(() => {
@@ -31,7 +32,11 @@ const AppRoutes = () => {
           element:  <PublicRoute />,
           children: [
             {
-              path: "",
+              path:'',
+              element:<Home />,
+            },
+            {
+              path: "/register",
               element: <Register />,
             },
             {
@@ -52,7 +57,7 @@ const AppRoutes = () => {
           children: [
             {
               path: "",
-              element: <Home />,
+              element:<DashboardHome/> ,
             },
           ],
         },
