@@ -1,7 +1,7 @@
 import { Router } from "express";
 import asyncHandler from "../../../shared/utils/asyncHandler.js";
 import { responseCache } from "../cache/responseCache.js";
-import { search } from ".//search.controller.js";
+import { search } from "./search.controller.js";
 
 /**
  * Search Routes (Public)

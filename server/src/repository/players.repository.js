@@ -32,4 +32,10 @@ export default class PlayersRepo {
       { new: true },
     );
   }
+
+  async exists(id) {
+    const player = await playerModel.exists({ _id: id, isDeleted: false });
+    return Boolean(player);
+  }
+
 }

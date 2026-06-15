@@ -1,4 +1,4 @@
-import playerModel from "../../../models/player.model.js";
+import playerModel from "../../../models/players.model.js";
 import TeamModel from "../../../models/team.model.js";
 import { SeriesModel } from "../../../models/series.model.js";
 
