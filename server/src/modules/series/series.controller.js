@@ -5,6 +5,7 @@ export default class SeriesController {
     this.seriesService = new SeriesService();
   }
 
+  // Create a new series
   async createSeries(req, res, next) {
     try {
       const series = await this.seriesService.createSeries(req.body);
@@ -18,6 +19,7 @@ export default class SeriesController {
     }
   }
 
+  // Get all series
   async getAllSeries(req, res, next) {
     try {
       const series = await this.seriesService.getAllSeries();
@@ -31,6 +33,7 @@ export default class SeriesController {
     }
   }
 
+  // Get series by id
   async getSeriesById(req, res, next) {
     try {
       const { id } = req.params;
@@ -46,6 +49,7 @@ export default class SeriesController {
     }
   }
 
+  // Update series details
   async updateSeries(req, res, next) {
     try {
       const { id } = req.params;
@@ -61,6 +65,7 @@ export default class SeriesController {
     }
   }
 
+  // Soft delete a series
   async deleteSeries(req, res, next) {
     try {
       const { id } = req.params;

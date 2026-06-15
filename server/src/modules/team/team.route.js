@@ -50,7 +50,7 @@ router.get(
 router.get(
   "/:id",
   validateRequest(teamIdParamSchema),
-  asyncHandler(adminController.getTeamById)
+  asyncHandler(adminController.getTeamById),
 );
 
 // ─── Admin Routes (auth required) ────────────────────────────────────
@@ -65,7 +65,7 @@ router.post(
   authMiddleware,
   authorizeRoles(ROLES.SUPER_ADMIN, ROLES.ADMIN),
   validateRequest(createTeamSchema),
-  asyncHandler(adminController.createTeam)
+  asyncHandler(adminController.createTeam),
 );
 
 /**
@@ -78,7 +78,7 @@ router.patch(
   authMiddleware,
   authorizeRoles(ROLES.SUPER_ADMIN, ROLES.ADMIN),
   validateRequest(updateTeamSchema),
-  asyncHandler(adminController.updateTeam)
+  asyncHandler(adminController.updateTeam),
 );
 
 /**
@@ -91,33 +91,8 @@ router.delete(
   authMiddleware,
   authorizeRoles(ROLES.SUPER_ADMIN, ROLES.ADMIN),
   validateRequest(teamIdParamSchema),
-  asyncHandler(adminController.deleteTeam)
+  asyncHandler(adminController.deleteTeam),
 );
 
-/**
- * POST /api/teams/:teamId/squad
- * Add a player to a team's squad.
- * Access: SUPER_ADMIN | ADMIN
- */
-router.post(
-  "/:teamId/squad",
-  authMiddleware,
-  authorizeRoles(ROLES.SUPER_ADMIN, ROLES.ADMIN),
-  validateRequest(addPlayerToSquadSchema),
-  asyncHandler(adminController.addPlayerToSquad)
-);
-
-/**
- * DELETE /api/teams/:teamId/squad/:playerId
- * Remove a player from a team's squad.
- * Access: SUPER_ADMIN | ADMIN
- */
-router.delete(
-  "/:teamId/squad/:playerId",
-  authMiddleware,
-  authorizeRoles(ROLES.SUPER_ADMIN, ROLES.ADMIN),
-  validateRequest(removePlayerFromSquadSchema),
-  asyncHandler(adminController.removePlayerFromSquad)
-);
 
 export default router;

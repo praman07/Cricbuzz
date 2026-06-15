@@ -5,6 +5,7 @@ import UserController from "./user.controller.js";
 
 import { authMiddleware, authorizeRoles } from "../../shared/middlewares/auth.middleware.js";
 import { ROLES } from "../../shared/constants/role.js";
+import asyncHandler from "../../shared/utils/asyncHandler.js";
 
 const router = express.Router();
 const userController = new UserController();
@@ -17,7 +18,7 @@ router.get(
   "/",
   authMiddleware,
   authorizeRoles(ROLES.ADMIN,ROLES.SUPER_ADMIN),
-  userController.getUsers.bind(userController)
+  asyncHandler(userController.getUsers.bind(userController))
 );
 
 /**
@@ -28,14 +29,14 @@ router.get(
   "/:id",
   authMiddleware,
   authorizeRoles(ROLES.ADMIN,ROLES.SUPER_ADMIN),
-  userController.getUserById.bind(userController)
+  asyncHandler(userController.getUserById.bind(userController))
 );
 
 router.patch(
   "/:id/role",
   authMiddleware,
   authorizeRoles(ROLES.SUPER_ADMIN),
-  userController.changeUserRole.bind(userController)
+ asyncHandler(userController.changeUserRole.bind(userController))
 );
 
 export default router;

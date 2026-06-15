@@ -1,6 +1,9 @@
 import express from "express";
 import passport from "passport";
 import AuthController from "./auth.controller.js";
+import asyncHandler from "../../shared/utils/asyncHandler.js";
+import { authMiddleware, authorizeRoles } from "../../shared/middlewares/auth.middleware.js";
+import { ROLES } from "../../shared/constants/role.js";
 
 let router = express.Router();
 let authController = new AuthController();
@@ -29,7 +32,7 @@ router.get(
     failureRedirect: "/login",
     session: false,
   }),
-  authController.GoogleCallback.bind(authController),
+  asyncHandler(authController.GoogleCallback.bind(authController)),
 );
 
 /**
@@ -39,7 +42,9 @@ router.get(
  */
 router.post(
   "/register",
-  authController.registerController.bind(authController)
+  authMiddleware,
+  authorizeRoles(ROLES.SUPER_ADMIN),
+  asyncHandler(authController.registerController.bind(authController))
 );
 
 /**
@@ -49,7 +54,7 @@ router.post(
  */
 router.post(
   "/login",
-  authController.logincontroller.bind(authController)
+  asyncHandler(authController.logincontroller.bind(authController))
 );
 
 /**
@@ -62,5 +67,22 @@ router.get("/health", (req, res) => {
     health: "Good",
   });
 });
+
+/**
+ * @route   GET /auth/me
+ * @desc    Current user 
+ * @access  Public
+ */
+
+router.get('/me',
+  authMiddleware,
+  asyncHandler(authController.getMe.bind(authController)))
+
+/**
+ * @route   GET /auth/refresh
+ * @desc    Generates new Acces Token
+ * @access  Public
+ */
+router.get('/refresh',asyncHandler(authController.refreshAccessToken.bind(authController)))
 
 export default router;
