@@ -14,6 +14,8 @@ const VALID_TRANSITIONS = {
 };
 
 export const getMatches = async (query = {}) => {
+  await matchRepository.syncStatusByStartTime();
+
   const filter = {};
   if (query.status) filter.status = query.status;
   if (query.seriesId) filter.seriesId = query.seriesId;
@@ -21,16 +23,30 @@ export const getMatches = async (query = {}) => {
 };
 
 export const getMatchById = async (id) => {
+  await matchRepository.syncStatusByStartTime();
+
   const match = await matchRepository.findById(id);
   if (!match) throw new NotFoundError("Match not found");
   return match;
 };
 
 export const createMatch = async (payload, userId) => {
-  return matchRepository.create({ ...payload, createdBy: userId, updatedBy: userId });
+  const derivedStatus =
+    new Date(payload.startTime) <= new Date()
+      ? MATCH_STATUS.LIVE
+      : MATCH_STATUS.UPCOMING;
+
+  return matchRepository.create({
+    ...payload,
+    status: payload.status || derivedStatus,
+    createdBy: userId,
+    updatedBy: userId,
+  });
 };
 
 export const updateMatch = async (id, payload, userId) => {
+  await matchRepository.syncStatusByStartTime();
+
   const match = await matchRepository.findById(id);
 
   if (!match) throw new NotFoundError("Match not found");
@@ -64,6 +80,8 @@ export const updateMatch = async (id, payload, userId) => {
   // DB update
   const updated = await matchRepository.updateById(id, { ...payload, updatedBy: userId });
 
+  await matchRepository.syncStatusByStartTime();
+
   // ─── Socket.IO events ─────────────────────────────────────────────
   if (payload.status && payload.status !== match.status) {
     if (payload.status === MATCH_STATUS.TOSS_COMPLETED) {
@@ -83,7 +101,7 @@ export const updateMatch = async (id, payload, userId) => {
     }
   }
 
-  return updated;
+  return matchRepository.findById(updated._id);
 };
 
 export const deleteMatch = async (id, userId) => {

@@ -1,4 +1,5 @@
 import * as matchRepository from "./match.repository.js";
+import { syncStatusByStartTime } from "../../../repository/match.repository.js";
 import { ensureId } from "../shared/query.js";
 import { MATCH_STATUS } from "../../../shared/constants/matchStatus.js";
 import NotFoundError from "../../../shared/errors/NotFound.error.js";
@@ -26,9 +27,11 @@ const VALID_STATUS_FILTERS = [
  * @throws {BadRequestError} invalid status value pe
  */
 export const getMatches = async (status) => {
+  await syncStatusByStartTime();
+
   if (status && !VALID_STATUS_FILTERS.includes(status.toUpperCase())) {
     throw new BadRequestError(
-      `Invalid status. Must be one of: ${VALID_STATUS_FILTERS.join(", ")}`
+      `Invalid status. Must be one of: ${VALID_STATUS_FILTERS.join(", ")}`,
     );
   }
 
@@ -42,6 +45,8 @@ export const getMatches = async (status) => {
  * @throws {NotFoundError}
  */
 export const getMatch = async (matchId) => {
+  await syncStatusByStartTime();
+
   ensureId(matchId, "Match");
 
   const [match, scores] = await Promise.all([
@@ -61,6 +66,8 @@ export const getMatch = async (matchId) => {
  * @throws {NotFoundError}
  */
 export const getMatchCenter = async (matchId) => {
+  await syncStatusByStartTime();
+
   ensureId(matchId, "Match");
 
   const [match, scores] = await Promise.all([
@@ -71,11 +78,12 @@ export const getMatchCenter = async (matchId) => {
   if (!match) throw new NotFoundError("Match not found");
 
   // Live score — innings 1 ya 2 jo chal raha hai
-  const liveScore = scores.find((s) =>
-    [MATCH_STATUS.LIVE, MATCH_STATUS.INNINGS_BREAK].includes(match.status)
-      ? s
-      : null
-  ) || null;
+  const liveScore =
+    scores.find((s) =>
+      [MATCH_STATUS.LIVE, MATCH_STATUS.INNINGS_BREAK].includes(match.status)
+        ? s
+        : null,
+    ) || null;
 
   return {
     matchInfo: {
@@ -92,9 +100,10 @@ export const getMatchCenter = async (matchId) => {
     },
     liveScore: scores,
     playingXI: match.playingXI,
-    result: match.status === MATCH_STATUS.COMPLETED
-      ? { winner: match.winner, result: match.result }
-      : null,
+    result:
+      match.status === MATCH_STATUS.COMPLETED
+        ? { winner: match.winner, result: match.result }
+        : null,
   };
 };
 
@@ -105,6 +114,8 @@ export const getMatchCenter = async (matchId) => {
  * @throws {NotFoundError}
  */
 export const getScorecard = async (matchId) => {
+  await syncStatusByStartTime();
+
   ensureId(matchId, "Match");
 
   const match = await matchRepository.findById(matchId);

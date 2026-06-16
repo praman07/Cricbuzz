@@ -1,4 +1,5 @@
 import matchModel from "../models/match.model.js";
+import { MATCH_STATUS } from "../shared/constants/matchStatus.js";
 
 /**
  * Repository Layer — Match
@@ -37,6 +38,34 @@ export const findAll = (filter = {}) =>
     .populate("tossWinner", "name shortName")
     .populate("winner", "name shortName")
     .sort({ startTime: -1 });
+
+/**
+ * Sync match status with startTime for scheduler-driven lifecycle.
+ * UPCOMING -> LIVE when startTime passes.
+ * LIVE -> UPCOMING when startTime moved back to future.
+ */
+export const syncStatusByStartTime = async () => {
+  const now = new Date();
+
+  await Promise.all([
+    matchModel.updateMany(
+      {
+        isDeleted: false,
+        status: MATCH_STATUS.UPCOMING,
+        startTime: { $lte: now },
+      },
+      { $set: { status: MATCH_STATUS.LIVE } }
+    ),
+    matchModel.updateMany(
+      {
+        isDeleted: false,
+        status: MATCH_STATUS.LIVE,
+        startTime: { $gt: now },
+      },
+      { $set: { status: MATCH_STATUS.UPCOMING } }
+    ),
+  ]);
+};
 
 /**
  * Find a single active match by its ID.

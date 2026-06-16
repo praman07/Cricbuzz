@@ -4,7 +4,6 @@ import AuthLayout from "../layouts/AuthLayout";
 import Register from "../../features/auth/ui/screens/Register";
 import Login from "../../features/auth/ui/screens/Login";
 import DashBoardLayout from "../layouts/DashBoardLayout";
-import Home from "../../features/home/ui/screen/Home";
 import { useDispatch } from "react-redux";
 import { currentUser } from "../../features/auth/state/auth/authAction";
 import PublicRoute from "../ProtectedRoutes/PublicRoute";
@@ -19,6 +18,8 @@ import LiveMatches from "../../features/dashboard/ui/screens/LiveMatches";
 import Logs from "../../features/dashboard/ui/screens/Logs";
 import Settings from "../../features/dashboard/ui/screens/Settings";
 import Support from "../../features/dashboard/ui/screens/Support";
+import { UserHome } from "../../features/user/ui/pages/UserHome";
+import { UserMatchDetails } from "../../features/user/ui/pages/UserMatchDetails";
 
 const AppRoutes = () => {
   let dispatch = useDispatch();
@@ -39,12 +40,20 @@ const AppRoutes = () => {
       children: [
         {
           path: "",
+          element: <UserHome />,
+        },
+        {
+          path: "matches",
+          element: <UserHome />,
+        },
+        {
+          path: "matches/:id",
+          element: <UserMatchDetails />,
+        },
+        {
+          path: "",
           element: <PublicRoute />,
           children: [
-            {
-              path: "",
-              element: <Home />,
-            },
             {
               path: "/register",
               element: <Register />,
@@ -104,7 +113,7 @@ const AppRoutes = () => {
             {
               path: "support",
               element: <Support />,
-            }
+            },
           ],
         },
       ],

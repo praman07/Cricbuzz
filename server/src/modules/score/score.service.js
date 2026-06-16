@@ -5,6 +5,7 @@ import NotFoundError from "../../shared/errors/NotFound.error.js";
 import BadRequestError from "../../shared/errors/BadRequest.error.js";
 import ConflictError from "../../shared/errors/conflict.error.js";
 import { MATCH_STATUS } from "../../shared/constants/matchStatus.js";
+import { buildMatchPlayersPayload } from "../../shared/utils/matchPlayersRealtime.js";
 
 /**
  * Service Layer — Score
@@ -45,7 +46,7 @@ const ensureLiveMatch = async (matchId) => {
  * @throws {ConflictError} agar us innings ka score already exist karta hai
  */
 export const createScore = async (payload, userId) => {
-  await ensureLiveMatch(payload.matchId);
+  const match = await ensureLiveMatch(payload.matchId);
 
   // Duplicate innings check
   const existing = await scoreRepository.findByMatchAndInnings(
@@ -63,6 +64,11 @@ export const createScore = async (payload, userId) => {
 
   // ─── Socket.IO event ──────────────────────────────────────────────
   emitToMatch(payload.matchId, "score.updated", score);
+  emitToMatch(
+    payload.matchId,
+    "players.updated",
+    buildMatchPlayersPayload({ match, score })
+  );
 
   return score;
 };
@@ -79,12 +85,17 @@ export const updateScore = async (id, payload, userId) => {
 
   if (!score) throw new NotFoundError("Score not found");
 
-  await ensureLiveMatch(score.matchId.toString());
+  const match = await ensureLiveMatch(score.matchId.toString());
 
   const updated = await scoreRepository.updateById(id, { ...payload, updatedBy: userId });
 
   // ─── Socket.IO event ──────────────────────────────────────────────
   emitToMatch(score.matchId.toString(), "score.updated", updated);
+  emitToMatch(
+    score.matchId.toString(),
+    "players.updated",
+    buildMatchPlayersPayload({ match, score: updated })
+  );
 
   return updated;
 };

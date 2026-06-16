@@ -12,8 +12,17 @@ import scoreModel from "../../models/score.model.js";
  * @param {object} data
  * @returns {Promise<object>}
  */
-export const create = (data) =>
-  scoreModel.create(data);
+const withPlayersPopulate = (query) =>
+  query
+    .populate("battingTeam", "name shortName logo")
+    .populate("striker", "name role battingStyle bowlingStyle image")
+    .populate("nonStriker", "name role battingStyle bowlingStyle image")
+    .populate("currentBowler", "name role battingStyle bowlingStyle image");
+
+export const create = async (data) => {
+  const score = await scoreModel.create(data);
+  return withPlayersPopulate(scoreModel.findById(score._id));
+};
 
 /**
  * Find all scores for a match.
@@ -21,10 +30,11 @@ export const create = (data) =>
  * @returns {Promise<object[]>}
  */
 export const findByMatchId = (matchId) =>
-  scoreModel
-    .find({ matchId })
-    .populate("battingTeam", "name shortName logo")
-    .sort({ innings: 1 });
+  withPlayersPopulate(
+    scoreModel
+      .find({ matchId })
+      .sort({ innings: 1 })
+  );
 
 /**
  * Find score by ID.
@@ -32,9 +42,7 @@ export const findByMatchId = (matchId) =>
  * @returns {Promise<object|null>}
  */
 export const findById = (id) =>
-  scoreModel
-    .findById(id)
-    .populate("battingTeam", "name shortName logo");
+  withPlayersPopulate(scoreModel.findById(id));
 
 /**
  * Find score by matchId and innings number.
@@ -52,6 +60,6 @@ export const findByMatchAndInnings = (matchId, innings) =>
  * @returns {Promise<object|null>}
  */
 export const updateById = (id, data) =>
-  scoreModel
-    .findByIdAndUpdate(id, data, { new: true, runValidators: true })
-    .populate("battingTeam", "name shortName logo");
+  withPlayersPopulate(
+    scoreModel.findByIdAndUpdate(id, data, { new: true, runValidators: true })
+  );

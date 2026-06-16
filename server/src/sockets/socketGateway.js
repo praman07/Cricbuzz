@@ -17,9 +17,14 @@ let ioInstance = null;
  * @param {import("http").Server} httpServer
  */
 export const initSocket = (httpServer) => {
+  const allowedOrigins = env.CORS_ORIGIN
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+
   ioInstance = new Server(httpServer, {
     cors: {
-      origin: env.CORS_ORIGIN,
+      origin: allowedOrigins,
       methods: ["GET", "POST"],
     },
   });

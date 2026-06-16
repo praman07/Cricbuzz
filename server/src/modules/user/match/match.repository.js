@@ -10,7 +10,14 @@ import { MATCH_STATUS } from "../../../shared/constants/matchStatus.js";
  * ─────────────────────────────────────────────────────────────────────
  */
 
-const TEAM_POPULATE = { path: "team1 team2", select: "name shortName logo primaryColor" };
+const TEAM_POPULATE = {
+  path: "team1 team2",
+  select: "name shortName logo primaryColor squadPlayers",
+  populate: {
+    path: "squadPlayers",
+    select: "name role battingStyle bowlingStyle image",
+  },
+};
 const SERIES_POPULATE = { path: "seriesId", select: "name shortName season" };
 const WINNER_POPULATE = { path: "winner tossWinner", select: "name shortName logo" };
 const PLAYING_XI_POPULATE = {
@@ -39,6 +46,7 @@ export const findAll = (status) => {
     .populate(SERIES_POPULATE)
     .populate(TEAM_POPULATE)
     .populate(WINNER_POPULATE)
+    .populate(PLAYING_XI_POPULATE)
     .sort({ startTime: -1 })
     .lean();
 };
@@ -53,6 +61,7 @@ export const findById = (matchId) =>
     .populate(SERIES_POPULATE)
     .populate(TEAM_POPULATE)
     .populate(WINNER_POPULATE)
+    .populate(PLAYING_XI_POPULATE)
     .lean();
 
 /**

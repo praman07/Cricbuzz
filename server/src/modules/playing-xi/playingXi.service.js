@@ -3,6 +3,7 @@ import NotFoundError from "../../shared/errors/NotFound.error.js";
 import BadRequestError from "../../shared/errors/BadRequest.error.js";
 import { MATCH_STATUS } from "../../shared/constants/matchStatus.js";
 import { emitToMatch } from "../../sockets/socketGateway.js";
+import { buildMatchPlayersPayload } from "../../shared/utils/matchPlayersRealtime.js";
 
 /**
  * Playing XI Service
@@ -111,6 +112,11 @@ export const selectPlayingXI = async (matchId, payload, userId) => {
 
   // ─── Socket.IO event ──────────────────────────────────────────────
   emitToMatch(matchId, "playingXI.updated", updated);
+  emitToMatch(
+    matchId,
+    "players.updated",
+    buildMatchPlayersPayload({ match: updated })
+  );
 
   return updated;
 };

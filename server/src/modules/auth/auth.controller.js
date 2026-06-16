@@ -31,8 +31,8 @@ export default class AuthController {
       app_config.cookies.REFRESH_COOKIE
     );
 
-    // Redirect user to frontend application
-    res.redirect("http://localhost:5173");
+    // Redirect user to dashboard after successful login
+    res.redirect("http://localhost:5173/home");
   }
 
   /**
