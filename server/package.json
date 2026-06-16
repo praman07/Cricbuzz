@@ -27,6 +27,7 @@
     "http-status-codes": "^2.3.0",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.7.0",
+    "nodemon": "^3.1.14",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
     "pino": "^10.3.1",
@@ -36,6 +37,6 @@
   },
   "devDependencies": {
     "morgan": "^1.11.0",
-    "nodemon": "^3.1.14"
+    
   }
 }
