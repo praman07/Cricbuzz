@@ -1,6 +1,7 @@
 const App = () => {
   return <div>
     test
+    test2
   </div>;
 };
 
