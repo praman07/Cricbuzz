@@ -41,5 +41,5 @@ builder.addCase(loginUser.pending,(state)=>{
 })
 
 
-let {addUser,removeUser}=authSlice.actions
+export const { addUser, removeUser } = authSlice.actions
 export default authSlice.reducer
