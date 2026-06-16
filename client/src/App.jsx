@@ -1,11 +1,8 @@
-import React from 'react'
-
 const App = () => {
-  return (
-    <div>
-      App
-    </div>
-  )
-}
+  return <div>
+    test
+    test2
+  </div>;
+};
 
-export default App
+export default App;
